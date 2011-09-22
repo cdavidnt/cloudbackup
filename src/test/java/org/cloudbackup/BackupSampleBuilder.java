@@ -25,40 +25,13 @@ public class BackupSampleBuilder {
 		return new BackupSampleBuilder();
 	}
 
-	public BackupSampleBuilder date(int day) {
-		this.createdAt = SampleDateUtils.date(day);
-		return this;
-	}
-
 	public BackupSampleBuilder date(Date date) {
-		this.createdAt = SampleDateUtils.date(date);
+		this.createdAt = date;
 		return this;
 	}
 
-	public BackupSampleBuilder date(int day, int month) {
-		this.createdAt = SampleDateUtils.date(day, month);
-		return this;
-	}
-
-	public BackupSampleBuilder date(int day, int month, int year) {
-		this.createdAt = SampleDateUtils.date(day, month, year);
-		return this;
-	}
-
-	public BackupSampleBuilder firstDayOfYear() {
-		return this.date(1, 1);
-	}
-
-	public BackupSampleBuilder firstDayOfMonth() {
-		return this.date(1);
-	}
-	
-	public BackupSampleBuilder firstDayOfMonth(int month) {
-		return this.date(1, month - 1);
-	}
-
-	public BackupSampleBuilder now() {
-		this.createdAt = SampleDateUtils.now();
+	public BackupSampleBuilder date(Dates dates) {
+		this.createdAt = dates.date();
 		return this;
 	}
 
@@ -146,21 +119,21 @@ public class BackupSampleBuilder {
 			id = "snap-" + nextId++;
 		}
 		if (automatic) {
-			tags.put(BackupImage.TAG_BACKUP_TYPE, BackupImage.BACKUP_TYPE_AUTOMATIC);
+			tags.put(BackupImageConverter.TAG_BACKUP_TYPE, BackupImageConverter.BACKUP_TYPE_AUTOMATIC);
 		}
 		if (deletable != null) {
-			tags.put(BackupImage.TAG_BACKUP_DELETABLE, this.deletable ? "yes" : "no");
+			tags.put(BackupImageConverter.TAG_BACKUP_DELETABLE, this.deletable ? "yes" : "no");
 		}
 		if (orderType != null) {
 			if (orderNumber == null) {
 				nextOrder();
 			}
-			tags.put(BackupImage.TAG_BACKUP_ORDER, this.orderType + "_" + this.orderNumber);
+			tags.put(BackupImageConverter.TAG_BACKUP_ORDER, this.orderType + "_" + this.orderNumber);
 		}
 		if (createdAt == null) {
-			now();
+			date(Dates.now());
 		}
-		return BackupImage.createFrom(id, createdAt, tags);
+		return BackupImageConverter.createFrom(id, createdAt, tags);
 	}
 
 }

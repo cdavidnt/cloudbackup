@@ -7,30 +7,31 @@ import java.util.Date;
 import java.util.List;
 
 import org.cloudbackup.BackupImage;
-import org.cloudbackup.DateUtils;
+import org.cloudbackup.DateRange;
+import org.cloudbackup.Dates;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class RangeDateImage implements Function<Collection<BackupImage>, Collection<BackupImage>>, Comparator<BackupImage> {
-	private Date minDate;
-	private Date maxDate;
+	private DateRange dateRange;
 
-	public RangeDateImage(Date minDate, Date maxDate) {
-		this.minDate = DateUtils.midday(minDate);
-		this.maxDate = DateUtils.midday(maxDate);
+	public RangeDateImage(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 
 	public RangeDateImage(Date referenceDate, int daysBefore, int daysAfter) {
-		this.minDate = DateUtils.midday(DateUtils.addDays(referenceDate, -daysBefore));
-		this.maxDate = DateUtils.midday(DateUtils.addDays(referenceDate, daysAfter));
+		//@formatter:off
+		this(new DateRange(	Dates.at(referenceDate).addDays(-daysBefore).midday().date(), 
+										Dates.at(referenceDate).addDays(daysAfter).midday().date()));
+		//@formatter:on
 	}
 
 	public Collection<BackupImage> apply(Collection<BackupImage> input) {
 		List<BackupImage> backups = Lists.newArrayList();
 		for (BackupImage backupImage : input) {
-			Date backupDate = DateUtils.midday(backupImage.getCreatedAt());
-			if (minDate.before(backupDate) && maxDate.after(backupDate) || minDate.equals(backupDate) || maxDate.equals(backupDate)) {
+			Date backupDate = Dates.at(backupImage.getCreatedAt()).midday().date();
+			if (dateRange.isInRange(backupDate)) {
 				backups.add(backupImage);
 			}
 		}

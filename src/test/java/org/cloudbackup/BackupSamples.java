@@ -50,8 +50,4 @@ public class BackupSamples {
 		return BackupSampleBuilder.create().daily();
 	}
 
-	public static void main(String[] args) {
-		BackupSampleBuilder.create().id("snap1").date(1, 1, 2).now().tag("", "").tags("", "", "", "").automatic().daily().monthly().yearly().nextDay().order(1).nextOrder().notDeletable().build();
-	}
-
 }
