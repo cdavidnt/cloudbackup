@@ -1,9 +1,10 @@
-package org.cloudbackup;
+package org.cloudbackup.strategy;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.cloudbackup.BackupImage;
 import org.cloudbackup.filters.IsValidAutomaticFilter;
 import org.cloudbackup.filters.OrderTypeFilter;
 
@@ -20,11 +21,13 @@ public class ConfigurableBackupStrategy implements BackupStrategy {
 	private Function<Collection<BackupImage>, Collection<BackupImage>> alternativeElegibleFilter;
 
 	public void execute(List<BackupImage> images) {
+		//TODO RETHINK THIS:
 		Collection<BackupImage> elegible = Collections2.filter(images, getElegibleFilter());
 		if (alternativeElegibleFilter != null && elegible.isEmpty()) {
-			Collection<BackupImage> tempImages = Collections2.filter(images, new IsValidAutomaticFilter());
-			elegible = alternativeElegibleFilter.apply(tempImages);
+			Collection<BackupImage> validImages = Collections2.filter(images, new IsValidAutomaticFilter());
+			elegible = alternativeElegibleFilter.apply(validImages);
 		}
+
 		reorderImages(elegible);
 		deleteImages(elegible);
 	}

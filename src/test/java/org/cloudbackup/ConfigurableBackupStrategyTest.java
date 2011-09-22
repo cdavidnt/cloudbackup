@@ -9,6 +9,8 @@ import junit.framework.Assert;
 import org.cloudbackup.filters.MustDeleteFilter;
 import org.cloudbackup.filters.OrderTypeFilter;
 import org.cloudbackup.filters.SpecificDateOrRangeDateImage;
+import org.cloudbackup.strategy.ConfigurableBackupStrategy;
+import org.cloudbackup.strategy.ConfigurableBackupStrategyFactory;
 import org.junit.After;
 import org.junit.Test;
 
@@ -46,20 +48,18 @@ public class ConfigurableBackupStrategyTest {
 	
 	@Test
 	public void cenarioSucessoMensal() {
-		ConfigurableBackupStrategy backupStrategy = new ConfigurableBackupStrategy();
-		backupStrategy.setMaxBackups(1);
-		backupStrategy.setOrderType("M");
-		Date firstDayOfMonth = SampleDateUtils.firstDayOfMonth();
-		backupStrategy.setAlternativeElegibleFilter(new SpecificDateOrRangeDateImage(firstDayOfMonth, 10));
+		ConfigurableBackupStrategyFactory factory = new ConfigurableBackupStrategyFactory();
+		ConfigurableBackupStrategy backupStrategy = factory.monthlyStrategy(1, new Date(), 10);
 		
-		Date mayOneYearAgo = SampleDateUtils.date(1, 5, -1);
-		Date maySecond = SampleDateUtils.date(2, 5);
+		Date mayOneOneYearAgo = Dates.now().date(1, 5).previousYear().date();
+		Date maySecond = Dates.now().date(2, 5).date();
+
 		//@formatter:off
 		List<BackupImage> images = Lists.newArrayList(
 			daily().build(), 
 			dailyNotDeletable().build(),
 			daily().date(maySecond).build(),
-			daily().date(mayOneYearAgo).build(),
+			daily().date(mayOneOneYearAgo).build(),
 			daily().build());
 		//@formatter:off
 		
@@ -81,17 +81,17 @@ public class ConfigurableBackupStrategyTest {
 		ConfigurableBackupStrategy backupStrategy = new ConfigurableBackupStrategy();
 		backupStrategy.setMaxBackups(1);
 		backupStrategy.setOrderType("M");
-		Date firstDayOfMonth = SampleDateUtils.firstDayOfMonth();
+		Date firstDayOfMonth = Dates.now().firstDayOfMonth().date();
 		backupStrategy.setAlternativeElegibleFilter(new SpecificDateOrRangeDateImage(firstDayOfMonth, 10));
 
-		Date mayOneYearAgo = SampleDateUtils.date(1, 5, -1);
-		Date maySecond = SampleDateUtils.date(2, 5);
+		Date mayOneOneYearAgo = Dates.now().date(1, 5).previousYear().date();
+		Date maySecond = Dates.now().date(2, 5).date();
 		//@formatter:off
 		List<BackupImage> images = Lists.newArrayList(
 			daily().build(), 
 			dailyNotDeletable().build(),
 			daily().date(maySecond).build(),
-			daily().date(mayOneYearAgo).build(),
+			daily().date(mayOneOneYearAgo).build(),
 			monthly().build(),
 			monthly().build(),
 			daily().build());

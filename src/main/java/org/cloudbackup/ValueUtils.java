@@ -1,4 +1,5 @@
 package org.cloudbackup;
+
 public class ValueUtils {
 
 	public static String get(String value, String defaultValue) {
